@@ -1,52 +1,52 @@
 import random
-import sys
 import time
-
-# ASCII representation of dice faces
-DICE_ART = {
-    1: ("┌─────────┐", "│         │", "│    ●    │", "│         │", "└─────────┘"),
-    2: ("┌─────────┐", "│  ●      │", "│         │", "│      ●  │", "└─────────┘"),
-    3: ("┌─────────┐", "│  ●      │", "│    ●    │", "│      ●  │", "└─────────┘"),
-    4: ("┌─────────┐", "│  ●   ●  │", "│         │", "│  ●   ●  │", "└─────────┘"),
-    5: ("┌─────────┐", "│  ●   ●  │", "│    ●    │", "│  ●   ●  │", "└─────────┘"),
-    6: ("┌─────────┐", "│  ●   ●  │", "│  ●   ●  │", "│  ●   ●  │", "└─────────┘")
-}
-
-def display_dice(d1, d2):
-    """Prints two dice side-by-side using ASCII art."""
-    for i in range(5):
-        print(f"{DICE_ART[d1][i]}   {DICE_ART[d2][i]}")
+import sys
 
 def roll_dice():
     return random.randint(1, 6)
 
 def main():
-    print("=== Welcome to Visual Dice! ===")
-    score = 0
-    
+    print("--- ⚔️ Welcome to the Dice Battle! ⚔️ ---")
+    player_wins = 0
+    computer_wins = 0
+
     while True:
-        action = input(f"\n[Total Score: {score}] Press Enter to roll (q to quit): ").lower()
-        if action == 'q': break
+        print(f"\nScore -> You: {player_wins} | Computer: {computer_wins}")
+        action = input("Press Enter to roll for your turn (or 'q' to quit): ").lower()
         
-        print("Rolling...")
-        time.sleep(0.5) # Adds a small delay for suspense
+        if action == 'q':
+            break
+            
+        # Player's Turn
+        player_roll = roll_dice()
+        print(f"🎲 You rolled a {player_roll}!")
         
-        die1, die2 = roll_dice(), roll_dice()
-        display_dice(die1, die2)
+        # Computer's Turn with suspense
+        print("Computer is rolling...", end="", flush=True)
+        for _ in range(3):
+            time.sleep(0.5)
+            print(".", end="", flush=True)
         
-        current_total = die1 + die2
-        score += current_total
-        print(f"You rolled a total of {current_total}!")
+        comp_roll = roll_dice()
+        print(f"\n🤖 Computer rolled a {comp_roll}!")
+        
+        # Determine Winner
+        if player_roll > comp_roll:
+            print("🎉 You win this round!")
+            player_wins += 1
+        elif comp_roll > player_roll:
+            print("💀 Computer wins this round!")
+            computer_wins += 1
+        else:
+            print("🤝 It's a tie!")
+            
+        print("-" * 30)
 
-        # Double Bonus Logic
-        if die1 == die2:
-            print("✨ DOUBLE BONUS! You rolled a pair. Have a free extra roll!")
-            # The loop continues immediately without asking for input again
-            bonus = roll_dice()
-            print(f"Bonus roll: {bonus}")
-            score += bonus
-
-    print(f"\nFinal Score: {score}. Thanks for playing!")
+    print(f"\nFinal Result -> You: {player_wins} | Computer: {computer_wins}")
+    print("Thanks for playing!")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)
