@@ -1,32 +1,51 @@
 import random
 import sys
-def roll_dice(sides=6):
-    return random.randint(1, sides) #
-def get_user_input():
-    while True:
-        user_input = input("\nPress Enter to roll the dice, or type 'q' to quit: ") #
-        if user_input.lower() == 'q':
-            return 'quit'
-        elif user_input == '':
-            return 'roll'
-        else:
-            print("Invalid input. Please press Enter or type 'q'.")
+
+def roll_dice(sides):
+    """Simulates rolling a die with a specific number of sides."""
+    return random.randint(1, sides)
+
 def main():
-    print("Welcome to the Roll the Dice Game!")
+    print("--- Welcome to the Advanced Dice Simulator! ---")
+    
+    # Initialize session stats
+    total_score = 0
+    roll_count = 0
+    
+    # Allow user to choose dice type once, or default to 6
+    try:
+        sides_input = input("How many sides should the dice have? (Default is 6): ")
+        sides = int(sides_input) if sides_input.strip() != "" else 6
+        if sides < 1: raise ValueError
+    except ValueError:
+        print("Invalid input. Defaulting to 6-sided dice.")
+        sides = 6
+
     while True:
-        action = get_user_input()      
-        if action == 'quit':
+        action = input(f"\n[Score: {total_score} | Rolls: {roll_count}] \nPress Enter to roll, or 'q' to quit: ").lower()
+        
+        if action == 'q':
+            print(f"\nFinal Stats -> Total Score: {total_score} | Total Rolls: {roll_count}")
             print("Thanks for playing! Goodbye.")
-            break     
-        die1 = roll_dice() #
-        die2 = roll_dice() #
-        total = die1 + die2   
-        print(f"\nYou rolled a {die1} and a {die2}. Total: {total}") #
-        print("-" * 20) 
+            break
+        elif action == '':
+            # Roll two dice
+            die1 = roll_dice(sides)
+            die2 = roll_dice(sides)
+            current_total = die1 + die2
+            
+            # Update stats
+            total_score += current_total
+            roll_count += 1
+            
+            print(f"Result: {die1} + {die2} = {current_total}")
+            print("-" * 25)
+        else:
+            print("Invalid command. Please press Enter or 'q'.")
+
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\nGame interrupted. Goodbye.")
+        print("\n\nGame closed. See you next time!")
         sys.exit(0)
-
