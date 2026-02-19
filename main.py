@@ -2,80 +2,64 @@ import random
 import time
 import sys
 
-# ASCII Art for quick visual feedback
-DICE_FACES = {
-    1: "[  .  ]", 2: "[ . . ]", 3: "[. . .]",
-    4: "[: : ]", 5: "[: . :]", 6: "[: : :]"
-}
-
-def roll_dice():
-    return random.randint(1, 6)
+def roll_dice(sides=6):
+    return random.randint(1, sides)
 
 def main():
-    wallet = 100  # Starting balance
-    print("--- 🎰 Welcome to the Python High-Stakes Casino! 🎰 ---")
-    print(f"You're starting with ${wallet} in virtual chips.")
+    print("--- ⚔️ Welcome to Dice Dungeon RPG ⚔️ ---")
+    
+    # Character Setup
+    classes = {
+        "1": {"name": "Warrior", "hp": 25, "die": 8, "ability": "Shield: Blocks 2 dmg"},
+        "2": {"name": "Mage", "hp": 15, "die": 12, "ability": "Fireball: High dmg potential"}
+    }
+    
+    print("\nSelect your class:")
+    for key, val in classes.items():
+        print(f"{key}. {val['name']} ({val['hp']} HP, D{val['die']} Dice)")
+    
+    choice = input("Choice (1 or 2): ")
+    player = classes.get(choice, classes["1"])
+    
+    p_hp = player["hp"]
+    m_hp = 20  # Monster HP
+    
+    print(f"\nA wild Goblin appears! (HP: {m_hp})")
 
-    while wallet > 0:
-        print(f"\n💰 Current Wallet: ${wallet}")
-        action = input("Enter bet amount (or 'q' to cash out): ").lower()
+    while p_hp > 0 and m_hp > 0:
+        print(f"\nYour HP: {p_hp} | Goblin HP: {m_hp}")
+        input("Press Enter to Attack!")
         
-        if action == 'q':
+        # Player Turn
+        p_attack = roll_dice(player["die"])
+        print(f"You strike for {p_attack} damage!")
+        m_hp -= p_attack
+        
+        if m_hp <= 0:
+            print("✨ The Goblin has been defeated!")
             break
-        
-        try:
-            bet = int(action)
-            if bet > wallet or bet <= 0:
-                print("❌ Invalid bet! You can't bet more than you have.")
-                continue
-        except ValueError:
-            print("❌ Please enter a valid number or 'q'.")
-            continue
-
-        # Player Rolls
-        print("\nRolling for you...")
-        time.sleep(0.7)
-        p1, p2 = roll_dice(), roll_dice()
-        player_total = p1 + p2
-        print(f"You: {DICE_FACES[p1]} {DICE_FACES[p2]} -> Total: {player_total}")
-
-        # Computer Rolls
-        print("Dealer is rolling...")
-        time.sleep(1)
-        d1, d2 = roll_dice(), roll_dice()
-        dealer_total = d1 + d2
-        print(f"Dealer: {DICE_FACES[d1]} {DICE_FACES[d2]} -> Total: {dealer_total}")
-
-        # Result Logic
-        if player_total > dealer_total:
-            win_amount = bet
-            wallet += win_amount
-            print(f"🎉 WIN! You gained ${win_amount}.")
             
-            # Double or Nothing feature
-            choice = input("🔥 Double or Nothing? (y/n): ").lower()
-            if choice == 'y':
-                print("Risking it all on one roll...")
-                time.sleep(1)
-                if roll_dice() > 3:
-                    wallet += win_amount
-                    print(f"✅ SUCCESS! You doubled your win to ${win_amount * 2}!")
-                else:
-                    wallet -= (win_amount * 2)
-                    print(f"💀 BUST! You lost your winnings and the bet.")
-        elif player_total < dealer_total:
-            wallet -= bet
-            print(f"💸 LOSS! You lost ${bet}.")
-        else:
-            print("🤝 TIE! Your bet is returned.")
+        # Monster Turn
+        print("Goblin is attacking...")
+        time.sleep(1)
+        m_attack = roll_dice(6)
+        
+        # Apply Class Ability (Warrior Passive)
+        if player["name"] == "Warrior":
+            m_attack = max(0, m_attack - 2)
+            print(f"🛡️ Your shield blocked some damage!")
+            
+        print(f"Goblin hits you for {m_attack} damage!")
+        p_hp -= m_attack
 
-    if wallet <= 0:
-        print("\n💥 You're broke! Game over.")
+    if p_hp > 0:
+        print("\n🏆 Victory! You cleared the dungeon.")
     else:
-        print(f"\nFinal Cash Out: ${wallet}. See you at the tables!")
+        print("\n💀 You fell in battle... Game Over.")
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
         sys.exit(0)
+
