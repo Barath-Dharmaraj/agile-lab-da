@@ -1,51 +1,52 @@
 import random
 import sys
+import time
 
-def roll_dice(sides):
-    """Simulates rolling a die with a specific number of sides."""
-    return random.randint(1, sides)
+# ASCII representation of dice faces
+DICE_ART = {
+    1: ("┌─────────┐", "│         │", "│    ●    │", "│         │", "└─────────┘"),
+    2: ("┌─────────┐", "│  ●      │", "│         │", "│      ●  │", "└─────────┘"),
+    3: ("┌─────────┐", "│  ●      │", "│    ●    │", "│      ●  │", "└─────────┘"),
+    4: ("┌─────────┐", "│  ●   ●  │", "│         │", "│  ●   ●  │", "└─────────┘"),
+    5: ("┌─────────┐", "│  ●   ●  │", "│    ●    │", "│  ●   ●  │", "└─────────┘"),
+    6: ("┌─────────┐", "│  ●   ●  │", "│  ●   ●  │", "│  ●   ●  │", "└─────────┘")
+}
+
+def display_dice(d1, d2):
+    """Prints two dice side-by-side using ASCII art."""
+    for i in range(5):
+        print(f"{DICE_ART[d1][i]}   {DICE_ART[d2][i]}")
+
+def roll_dice():
+    return random.randint(1, 6)
 
 def main():
-    print("--- Welcome to the Advanced Dice Simulator! ---")
+    print("=== Welcome to Visual Dice! ===")
+    score = 0
     
-    # Initialize session stats
-    total_score = 0
-    roll_count = 0
-    
-    # Allow user to choose dice type once, or default to 6
-    try:
-        sides_input = input("How many sides should the dice have? (Default is 6): ")
-        sides = int(sides_input) if sides_input.strip() != "" else 6
-        if sides < 1: raise ValueError
-    except ValueError:
-        print("Invalid input. Defaulting to 6-sided dice.")
-        sides = 6
-
     while True:
-        action = input(f"\n[Score: {total_score} | Rolls: {roll_count}] \nPress Enter to roll, or 'q' to quit: ").lower()
+        action = input(f"\n[Total Score: {score}] Press Enter to roll (q to quit): ").lower()
+        if action == 'q': break
         
-        if action == 'q':
-            print(f"\nFinal Stats -> Total Score: {total_score} | Total Rolls: {roll_count}")
-            print("Thanks for playing! Goodbye.")
-            break
-        elif action == '':
-            # Roll two dice
-            die1 = roll_dice(sides)
-            die2 = roll_dice(sides)
-            current_total = die1 + die2
-            
-            # Update stats
-            total_score += current_total
-            roll_count += 1
-            
-            print(f"Result: {die1} + {die2} = {current_total}")
-            print("-" * 25)
-        else:
-            print("Invalid command. Please press Enter or 'q'.")
+        print("Rolling...")
+        time.sleep(0.5) # Adds a small delay for suspense
+        
+        die1, die2 = roll_dice(), roll_dice()
+        display_dice(die1, die2)
+        
+        current_total = die1 + die2
+        score += current_total
+        print(f"You rolled a total of {current_total}!")
+
+        # Double Bonus Logic
+        if die1 == die2:
+            print("✨ DOUBLE BONUS! You rolled a pair. Have a free extra roll!")
+            # The loop continues immediately without asking for input again
+            bonus = roll_dice()
+            print(f"Bonus roll: {bonus}")
+            score += bonus
+
+    print(f"\nFinal Score: {score}. Thanks for playing!")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("\n\nGame closed. See you next time!")
-        sys.exit(0)
+    main()
